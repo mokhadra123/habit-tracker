@@ -1,0 +1,616 @@
+// =====================================================================
+//  HABIT TRACKER — DATA MODEL
+//  Source of truth for @habit/shared and the Prisma schema.
+//  Traces to docs/BUSINESS_REQUIREMENTS.md (FR-*/NFR-* ids below).
+//
+//  CONVENTIONS
+//   - snake_case everywhere (Prisma will map to camelCase in TS).
+//   - All timestamps are timestamptz. All calendar days are `date`.
+//   - deleted_at = soft delete / deactivation. It is NOT the FR-6.3
+//     account deletion, which is a hard cascading delete. See §DELETION.
+//   - DBML cannot express CHECK constraints. Every conditional rule is
+//     written in a Note here and MUST be added as SQL in the migration.
+//     The list of required CHECKs is collected at the bottom of the file.
+//
+//  PHASES (docs/BUSINESS_REQUIREMENTS.md §8)
+//   [MVP]  ship first
+//   [v1.1] additive — new tables / nullable columns, no backfill needed
+//   [v2]   deferred, sketched in §DEFERRED only
+// =====================================================================
+
+
+// ====================================
+// ------------- ENUMS  ---------------
+// ====================================
+
+// System-level role. NOT the same as group_member_role.
+Enum user_role {
+  user
+  admin
+}
+
+// Role inside one group. NOT the same as users.role.
+Enum group_member_role {
+  owner
+  member
+}
+
+Enum habit_repeat {
+  daily
+  weekly
+  n_per_week
+  every_n_days
+}
+
+// State of the HABIT ITSELF (the rule), not of any single day.
+// active   -> generates expected days
+// paused   -> generates no expected days (see habit_pauses for the range)
+// archived -> ended, history preserved (FR-1.5)
+Enum habit_lifecycle {
+  active
+  paused
+  archived
+}
+
+Enum habit_type {
+  boolean
+  numeric
+  duration
+}
+
+// FR-1.7. building = do more; breaking = abstain / do less.
+Enum habit_direction {
+  building
+  breaking
+}
+
+// FR-3.2. Deliberately separate from habits.group_id.
+// group_id   = WHICH group this habit is associated with
+// visibility = WHETHER that group may see it
+// Conflating the two breaks as soon as FR-3.8 (shared group habits) lands,
+// and privacy checks must never hang on a nullable FK.
+Enum habit_visibility {
+  private
+  group
+}
+
+// Outcome of ONE DAY (the event), not of the habit.
+// There is deliberately NO `missed` value — absence of a row on an
+// expected day IS a miss, derived from the schedule at read time.
+// Never write miss rows (breaks backfill and schedule changes).
+Enum habit_log_status {
+  done
+  partial
+  skipped
+}
+
+// FR-3.4. Positive set only, closed by construction — there is no
+// downvote value, so a downvote cannot be stored even by a buggy client.
+Enum reaction_kind {
+  fire
+  muscle
+  clap
+  heart
+  star
+}
+
+
+// ====================================
+// -------------- TABLES  -------------
+// ====================================
+
+// ---------- [MVP] Accounts ----------
+Table users {
+  id integer [primary key]
+  username varchar [not null, unique]
+  email varchar [not null, unique]
+  password varchar [note: 'BCrypt hash. NEVER the plaintext password. NULL for OAuth-only users (FR-6.1).']
+  role user_role [not null, default: 'user']
+
+  // --- time & week resolution ---
+  timezone varchar [not null, note: 'IANA name e.g. Africa/Cairo. NEVER a fixed offset — offsets break across DST and silently corrupt FR-6.4.']
+  week_start smallint [not null, default: 1, note: 'FR-1.4/FR-2.4. 0=Sun .. 6=Sat. Defines when the n_per_week and allowed-misses windows reset.']
+  day_boundary_hour smallint [not null, default: 0, note: 'FR-6.5. 0..23 in local time. 4 = a log at 02:00 counts for the previous day.']
+
+  // --- notification policy (FR-4.2 / FR-4.5) ---
+  daily_reminder_budget smallint [not null, default: 3, note: 'FR-4.2. Hard cap on notifications per day across ALL habits.']
+  quiet_hours_start time [note: 'FR-4.5. NULL = quiet hours off. May wrap past midnight (22:00 -> 07:00).']
+  quiet_hours_end time
+
+  // --- auth lifecycle ---
+  is_account_verified boolean [not null, default: false]
+  verification_token varchar
+  verification_token_expires_at timestamptz
+
+  reset_password_token varchar
+  reset_password_token_expires_at timestamptz
+  password_changed_at timestamptz
+
+  profile_image varchar
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  deleted_at timestamptz [note: 'Deactivation. FR-6.3 hard delete is a separate operation — see §DELETION.']
+
+  indexes {
+    (email) [unique]
+    (username) [unique]
+    (deleted_at)
+  }
+}
+
+// ---------- [MVP] Groups ----------
+Table groups {
+  id integer [primary key]
+  group_name varchar [not null]
+  icon varchar
+
+  owner_id integer [not null, note: 'FR-3.9. The owner can toggle the leaderboard. Must also exist in group_members with role=owner.']
+  invite_code varchar [not null, unique, note: 'FR-3.1. Opaque random token for the invite link — never derive it from id, groups must not be enumerable.']
+
+  max_members smallint [not null, default: 12, note: 'FR-3.1. Group size 2..12. Enforced in app on join; CHECK bounds the column only.']
+  leaderboard_enabled boolean [not null, default: false, note: 'FR-3.9. Off by default, on purpose (design note §6.3).']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  deleted_at timestamptz
+
+  indexes {
+    (invite_code) [unique]
+    (owner_id)
+  }
+}
+
+Table group_members {
+  id integer [primary key]
+  group_id integer [not null]
+  user_id integer [not null]
+  role group_member_role [not null, default: 'member']
+  joined_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (group_id, user_id) [unique]
+    (user_id)
+  }
+
+  Note: 'Exactly one row per group must have role=owner, and it must match groups.owner_id.'
+}
+
+// ---------- [MVP] Habits ----------
+Table habits {
+  id integer [primary key]
+  habit_name varchar [not null]
+  icon varchar
+  color varchar [note: 'FR-1.1. Hex e.g. #E8743B.']
+  description text [note: 'What the user should actually do.']
+
+  lifecycle habit_lifecycle [not null, default: 'active', note: 'State of the habit rule. Compare habit_logs.status, which is the state of one day.']
+  direction habit_direction [not null, default: 'building']
+  visibility habit_visibility [not null, default: 'private']
+
+  // --- schedule (FR-1.3 / FR-1.4) ---
+  repeat_habit habit_repeat [not null, default: 'daily']
+  weekdays smallint[] [note: 'repeat_habit=weekly only. Values 0=Sun .. 6=Sat. Array holds 1 to 7 elements, e.g. {1,3,5}.']
+  times_per_week smallint [note: 'repeat_habit=n_per_week only. 1..7. Which days is deliberately NOT tracked (FR-1.4).']
+  interval_days smallint [note: 'repeat_habit=every_n_days only. >= 2. Counted from start_date.']
+  start_date date [not null, default: `now()`, note: 'Anchor for every_n_days; first day the habit is expected.']
+
+  // --- measurement (FR-1.2 / FR-1.6) ---
+  habit_type habit_type [not null, default: 'boolean']
+  target_value numeric [note: 'NULL for boolean; 8 for 8 glasses; 30 for 30 minutes.']
+  target_unit varchar [note: "NULL for boolean; 'glasses'/'pages' for numeric; 'minutes' for duration."]
+
+  // --- forgiving streak (FR-2.4) ---
+  allowed_misses_per_week smallint [not null, default: 1, note: 'FR-2.4. Misses tolerated before the streak breaks, per week as defined by users.week_start.']
+
+  // --- ownership & sharing ---
+  user_id integer [not null, note: 'Creator/owner of the habit definition.']
+  group_id integer [note: 'Which group this habit is associated with. NULL = not associated with any group. Visibility is decided by `visibility`, NOT by this column being NULL.']
+  is_shared_definition boolean [not null, default: false, note: 'FR-3.8 [v1.1]. TRUE = every group member logs against THIS habit row, so habit_logs.user_id varies. FALSE = only user_id logs against it.']
+  category_id integer
+  created_from_template_id integer [note: 'FR-1.8 [v1.1]. Provenance only; the habit is a full copy, not a live reference.']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  deleted_at timestamptz
+
+  indexes {
+    (user_id)
+    (group_id)
+    (category_id)
+    (group_id, visibility) [note: 'Group feed: find habits this group is allowed to see.']
+  }
+
+  Note: '''
+  Schedule columns are mutually exclusive — enforce as CHECK in migration:
+    daily        -> weekdays NULL, times_per_week NULL, interval_days NULL
+    weekly       -> weekdays 1..7 elements (values 0..6), times_per_week NULL, interval_days NULL
+    n_per_week   -> weekdays NULL, times_per_week 1..7,  interval_days NULL
+    every_n_days -> weekdays NULL, times_per_week NULL,  interval_days >= 2
+
+  Measurement columns:
+    boolean          -> target_value NULL, target_unit NULL
+    numeric/duration -> target_value > 0 AND target_unit NOT NULL
+
+  Sharing:
+    is_shared_definition = true requires group_id NOT NULL AND visibility = 'group'.
+  '''
+}
+
+// ---------- [v1.1] Pauses (FR-2.6) ----------
+Table habit_pauses {
+  id integer [primary key]
+  habit_id integer [not null]
+  start_date date [not null]
+  end_date date [note: 'NULL = paused open-ended until resumed.']
+  reason varchar
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (habit_id, start_date)
+  }
+
+  Note: '''
+  FR-2.6. A separate table, not two columns on habits, because a habit can
+  be paused many times and the consistency score must be able to exclude
+  EVERY past paused range from the denominator retroactively.
+  habits.lifecycle = 'paused' is the current-state cache of an open row here.
+  Ranges for one habit must not overlap.
+  '''
+}
+
+// ---------- [MVP] Logs ----------
+Table habit_logs {
+  id integer [primary key]
+  habit_id integer [not null]
+  user_id integer [not null, note: 'WHO logged it. Differs from habits.user_id only when habits.is_shared_definition = true.']
+
+  log_date date [not null, note: 'Resolved LOCAL calendar date (users.timezone + day_boundary_hour), never UTC. Storing UTC is the classic bug here: a Cairo user logging at 01:00 gets credited to the previous day.']
+  status habit_log_status [not null, note: 'No default — every write states the outcome explicitly. A silently defaulted `done` fabricates a completion the user never made (NFR-6).']
+  value numeric [note: 'NULL for boolean habits and for skipped. numeric: 5 of 8 glasses. duration: minutes.']
+
+  note text [note: 'FR-2.8 [v1.1].']
+  photo_url varchar [note: 'FR-2.9 [v2]. Optional verification photo.']
+
+  created_at timestamptz [not null, default: `now()`, note: 'This IS `loggedAt` — the real instant of logging, kept separate from log_date so backfill (FR-2.2) stays auditable.']
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (habit_id, user_id, log_date) [unique]
+    (user_id, log_date) [note: 'Heatmap + re-entry view (FR-5.1, FR-2.7).']
+    (log_date) [note: 'Group feed, which scans by date across many habits (FR-3.3).']
+  }
+
+  Note: '''
+  status semantics — this table is where the product thesis lives:
+    done     -> in the numerator AND the denominator
+    partial  -> in the denominator; numerator weighted by value/target_value
+    skipped  -> excluded from BOTH (FR-2.5). This is what protects the streak.
+    (missed) -> NOT STORED. Derived from the schedule when a row is absent.
+
+  status/value rules — enforce as CHECK in migration:
+    skipped                        -> value IS NULL
+    boolean habit + done           -> value IS NULL (status already carries the answer)
+    boolean habit + partial        -> ILLEGAL (binary habits have no middle)
+    numeric/duration + done        -> value IS NOT NULL AND value >= target_value
+    numeric/duration + partial     -> value IS NOT NULL AND value > 0 AND value < target_value
+
+  DECISION — `partial` is STORED, not derived. habits.target_value can be
+  edited; deriving partial from `value < target_value` would retroactively
+  flip every past log when the user raises their target. Storing it freezes
+  the verdict at the time it was earned.
+
+  Backfill window (FR-2.2, last 7 days) is an application rule, not a CHECK,
+  so that admin/import paths stay possible.
+  '''
+}
+
+// ---------- [MVP] Reactions (FR-3.4) ----------
+Table reactions {
+  id integer [primary key]
+  habit_log_id integer [not null]
+  user_id integer [not null, note: 'Who reacted.']
+  kind reaction_kind [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (habit_log_id, user_id) [unique]
+    (habit_log_id)
+  }
+
+  Note: '''
+  FR-3.4. One reaction per person per entry — tapping a different kind
+  REPLACES it (calmer feed for a 3-8 person group than allowing several).
+
+  PERMISSION IS NOT ENFORCEABLE HERE. A reaction is only legal if the
+  reactor can see the entry:
+    log -> habit -> visibility = 'group' -> habits.group_id
+        -> reactor must be in group_members for that group
+  No FK can express that chain. It is an application rule, and it is the
+  one that must not be wrong: a reaction on a private habit is a data leak.
+  '''
+}
+
+// ---------- [v1.1] Reminders (FR-4.1 .. FR-4.5) ----------
+Table reminders {
+  id integer [primary key]
+  habit_id integer [not null]
+  user_id integer [not null, note: 'Denormalised so the daily budget (FR-4.2) can be counted without joining habits.']
+
+  remind_at time [not null, note: 'FR-4.1. Local wall-clock time, resolved through users.timezone.']
+  is_enabled boolean [not null, default: true]
+
+  consecutive_ignores smallint [not null, default: 0, note: 'FR-4.4. Incremented when a reminder produces no log within the attribution window; reset to 0 on a log. Drives auto-decay.']
+  last_sent_at timestamptz
+  last_decayed_at timestamptz [note: 'FR-4.4 requires TELLING the user when frequency drops — this is what makes that message idempotent.']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (habit_id, remind_at) [unique]
+    (user_id, is_enabled)
+  }
+
+  Note: '''
+  FR-4.3 (suppress if already logged) is a send-time query, not stored state.
+  FR-4.2 budget and FR-4.5 quiet hours live on `users` — they are global
+  per person, not per habit, which is the whole point of the cap.
+  '''
+}
+
+// ---------- [v1.1] Nudges (FR-3.7) ----------
+Table nudges {
+  id integer [primary key]
+  group_id integer [not null]
+  from_user_id integer [not null]
+  to_user_id integer [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (to_user_id, from_user_id, created_at)
+    (group_id, created_at)
+  }
+
+  Note: '''
+  FR-3.7. Rate limit is once per (from_user, to_user) per week. Stored as an
+  append-only log rather than a counter so the limit is a query over
+  created_at — a counter would need resetting and would lose the audit trail.
+  from_user_id <> to_user_id.
+  '''
+}
+
+// ---------- [v1.1] Weekly review (FR-5.3) ----------
+Table weekly_reviews {
+  id integer [primary key]
+  user_id integer [not null]
+  week_start_date date [not null, note: 'First day of the reviewed week, aligned to users.week_start.']
+
+  what_worked text
+  what_did_not_work text
+  one_adjustment text [note: 'FR-5.3 asks for exactly ONE adjustment. Single column on purpose — a list would become a task manager (§11).']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, week_start_date) [unique]
+  }
+}
+
+// ---------- [v1.1] Templates (FR-1.8) ----------
+Table habit_templates {
+  id integer [primary key]
+  template_name varchar [not null]
+  icon varchar
+  color varchar
+  description text
+
+  habit_type habit_type [not null, default: 'boolean']
+  target_value numeric
+  target_unit varchar
+  direction habit_direction [not null, default: 'building']
+
+  repeat_habit habit_repeat [not null, default: 'daily']
+  weekdays smallint[]
+  times_per_week smallint
+  interval_days smallint
+
+  created_by_user_id integer [note: 'NULL = system/seeded template.']
+  group_id integer [note: 'NULL = available beyond one group.']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (group_id)
+    (created_by_user_id)
+  }
+
+  Note: '''
+  FR-1.8. Adopting a template COPIES its fields into a new habits row and
+  records habits.created_from_template_id. It is not a live link: editing a
+  template must never mutate habits people are already tracking.
+  Same schedule/measurement CHECKs as `habits` apply here.
+  '''
+}
+
+// ---------- Not required by any FR ----------
+Table habit_categories {
+  id integer [primary key]
+  habit_category_name varchar [not null, unique]
+
+  Note: '''
+  WARNING: no requirement asks for this, and BUSINESS_REQUIREMENTS.md §2 (P2,
+  feature overload) argues against categories. It is also global-only — users
+  cannot create their own. Kept because it already existed; treat it as a
+  candidate for removal before the first migration, since dropping an empty
+  table is free and dropping a populated one is not.
+  '''
+}
+
+
+// ====================================
+// ------------ RELATIONS  ------------
+// ====================================
+
+// Groups
+Ref: groups.owner_id > users.id                         [delete: restrict]
+Ref: group_members.group_id > groups.id                 [delete: cascade]
+Ref: group_members.user_id > users.id                   [delete: cascade]
+
+// Habits
+Ref: habits.user_id > users.id                          [delete: cascade]
+Ref: habits.group_id > groups.id                        [delete: set null]
+Ref: habits.category_id > habit_categories.id           [delete: set null]
+Ref: habits.created_from_template_id > habit_templates.id [delete: set null]
+
+// Pauses
+Ref: habit_pauses.habit_id > habits.id                  [delete: cascade]
+
+// Logs
+Ref: habit_logs.habit_id > habits.id                    [delete: cascade]
+Ref: habit_logs.user_id > users.id                      [delete: cascade]
+
+// Reactions
+Ref: reactions.habit_log_id > habit_logs.id             [delete: cascade]
+Ref: reactions.user_id > users.id                       [delete: cascade]
+
+// Reminders
+Ref: reminders.habit_id > habits.id                     [delete: cascade]
+Ref: reminders.user_id > users.id                       [delete: cascade]
+
+// Nudges
+Ref: nudges.group_id > groups.id                        [delete: cascade]
+Ref: nudges.from_user_id > users.id                     [delete: cascade]
+Ref: nudges.to_user_id > users.id                       [delete: cascade]
+
+// Weekly reviews
+Ref: weekly_reviews.user_id > users.id                  [delete: cascade]
+
+// Templates
+Ref: habit_templates.created_by_user_id > users.id      [delete: set null]
+Ref: habit_templates.group_id > groups.id               [delete: cascade]
+
+
+// ====================================
+// --------- TABLE GROUPING  ----------
+// ====================================
+TableGroup accounts {
+  users
+}
+
+TableGroup social {
+  groups
+  group_members
+  reactions
+  nudges
+}
+
+TableGroup tracking {
+  habits
+  habit_pauses
+  habit_logs
+  habit_categories
+  habit_templates
+}
+
+TableGroup engagement {
+  reminders
+  weekly_reviews
+}
+
+
+// =====================================================================
+//  §DELETION  (FR-6.3)
+// =====================================================================
+//  deleted_at is DEACTIVATION and nothing more. FR-6.3 asks for a full
+//  cascading delete, and the FKs above implement it: deleting a users row
+//  removes their habits, logs, reactions, reminders, nudges and reviews.
+//
+//  Two consequences to accept deliberately:
+//   1. A deleted member's reactions disappear from other people's feed
+//      history. That is the cost of an honest hard delete; the alternative
+//      (tombstone the user, keep the rows) is a different product promise.
+//   2. groups.owner_id is `restrict`, so an owner CANNOT delete their
+//      account while owning a group. The app must force ownership transfer
+//      or group deletion first. Cascading here would delete every other
+//      member's group out from under them.
+// =====================================================================
+
+
+// =====================================================================
+//  §CHECKS  — required SQL, DBML cannot express these
+//  Add by hand in the Prisma migration. Prisma has no CHECK support in
+//  schema.prisma either; these go in the generated .sql as raw statements.
+// =====================================================================
+//  users
+//    ck_users_week_start        week_start BETWEEN 0 AND 6
+//    ck_users_day_boundary      day_boundary_hour BETWEEN 0 AND 23
+//    ck_users_reminder_budget   daily_reminder_budget BETWEEN 0 AND 10
+//    ck_users_quiet_hours       (quiet_hours_start IS NULL) = (quiet_hours_end IS NULL)
+//
+//  groups
+//    ck_groups_max_members      max_members BETWEEN 2 AND 12
+//
+//  habits
+//    ck_habits_schedule         the four-way exclusivity in the habits Note
+//    ck_habits_weekdays         weekdays values BETWEEN 0 AND 6, 1..7 elements, no duplicates
+//    ck_habits_measure          boolean -> target_value/unit NULL;
+//                               numeric|duration -> target_value > 0 AND target_unit NOT NULL
+//    ck_habits_shared           is_shared_definition -> group_id NOT NULL AND visibility = 'group'
+//    ck_habits_misses           allowed_misses_per_week BETWEEN 0 AND 7
+//
+//  habit_pauses
+//    ck_pauses_range            end_date IS NULL OR end_date >= start_date
+//    (overlap prevention needs an EXCLUDE constraint with btree_gist,
+//     or an application-level guard — decide before v1.1)
+//
+//  habit_logs
+//    ck_logs_status_value       the status/value matrix in the habit_logs Note
+//    ck_logs_not_future         log_date <= current_date + 1  (tolerates timezone edges)
+//
+//  nudges
+//    ck_nudges_not_self         from_user_id <> to_user_id
+//
+//  COMPOSITE FK (integrity, not a CHECK)
+//    habit_logs (habit_id, user_id) must be a legal pair. For non-shared
+//    habits, habit_logs.user_id must equal habits.user_id. Enforce with a
+//    trigger or in the application — a plain FK cannot express it.
+// =====================================================================
+
+
+// =====================================================================
+//  §DEFERRED  — [v2], intentionally NOT modelled
+// =====================================================================
+//  FR-3.5 peer verification. Shape when needed:
+//    habit_verifications(id, habit_log_id, verifier_user_id, verified_at,
+//                        status: pending|confirmed|rejected)
+//    plus habits.requires_verification bool and habits.verifier_user_id.
+//  Left out because the confirm/reject UX is undecided, and a wrong table
+//  now costs more than an added table later. It is purely additive.
+//
+//  Multiple groups per user is ALREADY supported by group_members being a
+//  proper many-to-many. The MVP restriction to one group is an application
+//  rule, not a schema limit — no migration needed to lift it.
+//
+//  FR-5.5 export (JSON/CSV) and FR-2.3 consistency score need no tables.
+//  Both are derived: consistency = done+partial over expected days, with
+//  skipped days and paused ranges removed from the denominator.
+// =====================================================================
+
+
+// ====================================
+// ------------- SEEDING  -------------
+// ====================================
+// DBML has no syntax for seed rows — `Records` is not part of the language
+// and makes this file fail to compile. Fixtures therefore live in:
+//
+//     docs/seed.sql
+//
+// They cover every habit_type, every repeat_habit, both visibilities, a
+// backfilled log, a skipped day, a derived (unstored) miss, a shared group
+// definition and a private habit that must not appear in the group feed.
+//
+// Validate this schema with:
+//     npx -p @dbml/cli dbml2sql docs/data-modeling.dbml --postgres

@@ -1,0 +1,70 @@
+# ---- Dependencies ----
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Nested lockfiles: this monorepo keeps exactly one, at the root
+apps/*/pnpm-lock.yaml
+packages/*/pnpm-lock.yaml
+
+# ---- Build output ----
+dist/
+build/
+out/
+.next/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- Env & secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+
+# ---- Tests / coverage ----
+coverage/
+.nyc_output/
+
+# ---- Logs ----
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Runtime ----
+pids
+*.pid
+*.seed
+*.pid.lock
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+.temp
+.tmp
+
+# ---- Editors ----
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+.project
+.classpath
+.settings/
+*.sublime-workspace
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Deploy ----
+.vercel
+
+# ---- Designs ----
+design/

@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    *{ box-sizing: border-box; }
+    body{ margin:0; background: oklch(0.982 0.008 80); color: oklch(0.24 0.018 55);
+          font-family: Archivo, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    a{ color: oklch(0.58 0.12 45); } a:hover{ color: oklch(0.47 0.12 45); }
+    .serif{ font-family: "Instrument Serif", Georgia, serif; font-weight:400; }
+    .cap{ font-size:10px; letter-spacing:0.12em; text-transform:uppercase; font-weight:600; color: oklch(0.66 0.010 55); }
+  </style>
+</helmet>
+
+<div style="width:390px; min-height:844px; display:flex; flex-direction:column; background: oklch(0.982 0.008 80);">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; padding:22px 20px 0;">
+    <button style="min-width:56px; min-height:44px; border:none; background:transparent; font-family:inherit; font-size:13.5px; color: oklch(0.58 0.014 55); text-align:left; cursor:pointer; padding:0;">Cancel</button>
+    <div style="font-size:13.5px; font-weight:600;">New habit</div>
+    <button style="min-width:56px; min-height:44px; border:none; background:transparent; font-family:inherit; font-size:13.5px; font-weight:600; color: oklch(0.58 0.12 45); text-align:right; cursor:pointer; padding:0;">Save</button>
+  </div>
+
+  <div style="padding:12px 20px 0;">
+    <div style="padding:16px 18px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.905 0.010 80); border-radius:16px;">
+      <div class="cap">What is it</div>
+      <div class="serif" style="font-size:28px; line-height:1.1; margin-top:9px;">Swim<span style="display:inline-block; width:2px; height:26px; background: oklch(0.58 0.12 45); vertical-align:-4px; margin-left:2px;"></span></div>
+    </div>
+  </div>
+
+  <div style="padding:16px 20px 0;">
+    <div class="cap" style="padding-bottom:9px;">How is it measured</div>
+    <div style="display:flex; gap:7px;">
+      <div style="flex-grow:1; min-height:44px; border-radius:12px; border:1.5px solid oklch(0.88 0.012 80); background: oklch(0.999 0.003 80); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color: oklch(0.52 0.014 55);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        <span style="font-size:11px;">Done or not</span>
+      </div>
+      <div style="flex-grow:1; min-height:44px; border-radius:12px; border:1.5px solid oklch(0.88 0.012 80); background: oklch(0.999 0.003 80); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color: oklch(0.52 0.014 55);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+        <span style="font-size:11px;">An amount</span>
+      </div>
+      <div style="flex-grow:1; min-height:44px; border-radius:12px; border:1.5px solid oklch(0.58 0.12 45); background: oklch(0.955 0.024 45); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color: oklch(0.46 0.11 45);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8.2"/><path d="M12 9.4V13l2.3 2.3M9.2 2.6h5.6"/></svg>
+        <span style="font-size:11px; font-weight:600;">Time</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:18px 20px 0;">
+    <div class="cap" style="padding-bottom:9px;">How often</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+
+      <div style="padding:13px 15px; border-radius:14px; border:1.5px solid oklch(0.90 0.010 80); background: oklch(0.999 0.003 80); display:flex; align-items:center; gap:12px; min-height:44px;">
+        <div style="width:18px; height:18px; border-radius:999px; border:1.5px solid oklch(0.84 0.012 80); flex-shrink:0;"></div>
+        <div style="font-size:13.5px; color: oklch(0.40 0.016 55);">Every day</div>
+      </div>
+
+      <div style="padding:14px 15px; border-radius:14px; border:1.5px solid oklch(0.58 0.12 45); background: oklch(0.999 0.003 80);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:18px; height:18px; border-radius:999px; border:5px solid oklch(0.58 0.12 45); flex-shrink:0;"></div>
+          <div style="flex-grow:1;">
+            <div style="font-size:13.5px; font-weight:600;">A few times a week</div>
+            <div style="font-size:11px; color: oklch(0.66 0.010 55); margin-top:2px;">Any days you like</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:9px;">
+            <button style="width:32px; height:32px; border-radius:10px; border:1px solid oklch(0.90 0.010 80); background: oklch(0.975 0.006 80); color: oklch(0.45 0.016 55); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg>
+            </button>
+            <span style="font-size:16px; font-weight:600; min-width:14px; text-align:center;">3</span>
+            <button style="width:32px; height:32px; border-radius:10px; border:1px solid oklch(0.90 0.010 80); background: oklch(0.975 0.006 80); color: oklch(0.45 0.016 55); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:8px; margin-top:12px; padding:10px 12px; background: oklch(0.955 0.024 45); border-radius:10px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.52 0.10 45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:1px; flex-shrink:0;"><path d="M12 3.2l1.9 5.4 5.4 1.9-5.4 1.9L12 17.8l-1.9-5.4L4.7 10.5l5.4-1.9z"/></svg>
+          <div style="font-size:11px; line-height:1.5; color: oklch(0.44 0.07 45);">Recommended. Missing Tuesday means nothing if the week still adds up.</div>
+        </div>
+      </div>
+
+      <div style="padding:13px 15px; border-radius:14px; border:1.5px solid oklch(0.90 0.010 80); background: oklch(0.999 0.003 80); display:flex; align-items:center; gap:12px; min-height:44px;">
+        <div style="width:18px; height:18px; border-radius:999px; border:1.5px solid oklch(0.84 0.012 80); flex-shrink:0;"></div>
+        <div style="font-size:13.5px; color: oklch(0.40 0.016 55);">Certain weekdays</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="padding:18px 20px 0;">
+    <div style="padding:14px 16px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.905 0.010 80); border-radius:14px; display:flex; align-items:center; gap:13px; min-height:44px;">
+      <div style="flex-grow:1;">
+        <div style="font-size:13.5px; font-weight:500;">Forgive one miss a week</div>
+        <div style="font-size:11px; color: oklch(0.66 0.010 55); margin-top:3px; line-height:1.45;">Your run survives a single bad day</div>
+      </div>
+      <div style="width:48px; height:28px; border-radius:999px; background: oklch(0.58 0.10 155); display:flex; align-items:center; justify-content:flex-end; padding:3px; flex-shrink:0;">
+        <div style="width:22px; height:22px; border-radius:999px; background: oklch(0.999 0.004 155);"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:18px 20px 0;">
+    <div class="cap" style="padding-bottom:9px;">Who can see it</div>
+    <div style="display:flex; gap:7px;">
+      <div style="flex-grow:1; min-height:44px; padding:0 12px; border-radius:12px; border:1.5px solid oklch(0.88 0.012 80); background: oklch(0.999 0.003 80); display:flex; align-items:center; justify-content:center; gap:7px; color: oklch(0.52 0.014 55);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg>
+        <span style="font-size:12.5px;">Just me</span>
+      </div>
+      <div style="flex-grow:1; min-height:44px; padding:0 12px; border-radius:12px; border:1.5px solid oklch(0.58 0.12 45); background: oklch(0.955 0.024 45); display:flex; align-items:center; justify-content:center; gap:7px; color: oklch(0.46 0.11 45);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20"/><circle cx="9" cy="7" r="3.6"/><path d="M22 20v-1.5a4 4 0 0 0-3-3.85"/></svg>
+        <span style="font-size:12.5px; font-weight:600;">Sunrise Club</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:18px 20px 28px;">
+    <div style="padding:14px 16px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.905 0.010 80); border-radius:14px; display:flex; align-items:center; gap:13px; min-height:44px;">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.014 55)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M18 8.5a6 6 0 1 0-12 0c0 6.5-2.6 8.5-2.6 8.5h17.2S18 15 18 8.5"/><path d="M13.7 20.5a2 2 0 0 1-3.4 0"/></svg>
+      <div style="flex-grow:1;">
+        <div style="font-size:13.5px; font-weight:500;">Remind me at 07:00</div>
+        <div style="font-size:11px; color: oklch(0.66 0.010 55); margin-top:3px;">3 of 3 daily reminders used &mdash; that is the cap</div>
+      </div>
+      <div style="display:flex; gap:3px; flex-shrink:0;">
+        <div style="width:6px; height:6px; border-radius:999px; background: oklch(0.58 0.12 45);"></div>
+        <div style="width:6px; height:6px; border-radius:999px; background: oklch(0.58 0.12 45);"></div>
+        <div style="width:6px; height:6px; border-radius:999px; background: oklch(0.58 0.12 45);"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

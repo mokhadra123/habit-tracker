@@ -1,0 +1,396 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Foundations"
+    },
+    {
+      "id": "page-2",
+      "name": "Getting started"
+    },
+    {
+      "id": "page-3",
+      "name": "Every day"
+    },
+    {
+      "id": "page-4",
+      "name": "Habits"
+    },
+    {
+      "id": "page-5",
+      "name": "Group"
+    },
+    {
+      "id": "page-6",
+      "name": "You and edge cases"
+    },
+    {
+      "id": "page-7",
+      "name": "Desktop"
+    },
+    {
+      "id": "page-8",
+      "name": "Other directions"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "Foundations.dc.html",
+      "page": "page-1",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1060,
+      "title": "Foundations"
+    },
+    {
+      "file": "Components.dc.html",
+      "page": "page-1",
+      "x": 1180,
+      "y": 0,
+      "w": 1080,
+      "h": 780,
+      "title": "Components"
+    },
+    {
+      "file": "HabitRowStates.dc.html",
+      "page": "page-1",
+      "x": 2360,
+      "y": 0,
+      "w": 440,
+      "h": 900,
+      "title": "Habit row states"
+    },
+    {
+      "file": "SignIn.dc.html",
+      "page": "page-2",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Sign in"
+    },
+    {
+      "file": "CreateAccount.dc.html",
+      "page": "page-2",
+      "x": 490,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Create account"
+    },
+    {
+      "file": "OnboardHabits.dc.html",
+      "page": "page-2",
+      "x": 980,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Onboarding — pick habits"
+    },
+    {
+      "file": "OnboardGroup.dc.html",
+      "page": "page-2",
+      "x": 1470,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Onboarding — group"
+    },
+    {
+      "file": "InviteAccept.dc.html",
+      "page": "page-2",
+      "x": 1960,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Invite link"
+    },
+    {
+      "file": "Main.dc.html",
+      "page": "page-3",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Today"
+    },
+    {
+      "file": "TodayEmpty.dc.html",
+      "page": "page-3",
+      "x": 490,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Today — nothing yet"
+    },
+    {
+      "file": "TodayAllDone.dc.html",
+      "page": "page-3",
+      "x": 980,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Today — all done"
+    },
+    {
+      "file": "SheetAmount.dc.html",
+      "page": "page-3",
+      "x": 1470,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Log an amount"
+    },
+    {
+      "file": "SheetTimer.dc.html",
+      "page": "page-3",
+      "x": 1960,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Log a duration"
+    },
+    {
+      "file": "SheetSkip.dc.html",
+      "page": "page-3",
+      "x": 2450,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Skip today"
+    },
+    {
+      "file": "HabitsList.dc.html",
+      "page": "page-4",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 1120,
+      "title": "All habits"
+    },
+    {
+      "file": "HabitDetail.dc.html",
+      "page": "page-4",
+      "x": 490,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Habit detail"
+    },
+    {
+      "file": "HabitBreaking.dc.html",
+      "page": "page-4",
+      "x": 980,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Habit detail — breaking"
+    },
+    {
+      "file": "NewHabit.dc.html",
+      "page": "page-4",
+      "x": 1470,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "New habit"
+    },
+    {
+      "file": "EditHabit.dc.html",
+      "page": "page-4",
+      "x": 1960,
+      "y": 0,
+      "w": 390,
+      "h": 1080,
+      "title": "Edit habit"
+    },
+    {
+      "file": "GroupFeed.dc.html",
+      "page": "page-5",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Group feed"
+    },
+    {
+      "file": "GroupMembers.dc.html",
+      "page": "page-5",
+      "x": 490,
+      "y": 0,
+      "w": 390,
+      "h": 1000,
+      "title": "Members and invite"
+    },
+    {
+      "file": "WeeklyReview.dc.html",
+      "page": "page-5",
+      "x": 980,
+      "y": 0,
+      "w": 390,
+      "h": 980,
+      "title": "Weekly review"
+    },
+    {
+      "file": "GroupEmpty.dc.html",
+      "page": "page-5",
+      "x": 1470,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Group — nobody yet"
+    },
+    {
+      "file": "Profile.dc.html",
+      "page": "page-6",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "You"
+    },
+    {
+      "file": "NotifSettings.dc.html",
+      "page": "page-6",
+      "x": 490,
+      "y": 0,
+      "w": 390,
+      "h": 1020,
+      "title": "Reminders"
+    },
+    {
+      "file": "DataPrivacy.dc.html",
+      "page": "page-6",
+      "x": 980,
+      "y": 0,
+      "w": 390,
+      "h": 980,
+      "title": "Data and privacy"
+    },
+    {
+      "file": "Return.dc.html",
+      "page": "page-6",
+      "x": 1470,
+      "y": 0,
+      "w": 390,
+      "h": 920,
+      "title": "Coming back after a lapse"
+    },
+    {
+      "file": "SystemStates.dc.html",
+      "page": "page-6",
+      "x": 1960,
+      "y": 0,
+      "w": 440,
+      "h": 900,
+      "title": "System states"
+    },
+    {
+      "file": "Desktop.dc.html",
+      "page": "page-7",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 860,
+      "title": "Today, desktop"
+    },
+    {
+      "file": "DesktopHabit.dc.html",
+      "page": "page-7",
+      "x": 1380,
+      "y": 0,
+      "w": 1280,
+      "h": 860,
+      "title": "Habit detail, desktop"
+    },
+    {
+      "file": "DirectionDense.dc.html",
+      "page": "page-8",
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 800,
+      "title": "Direction B"
+    },
+    {
+      "file": "DirectionOneThing.dc.html",
+      "page": "page-8",
+      "x": 490,
+      "y": 0,
+      "w": 390,
+      "h": 800,
+      "title": "Direction C"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "note-found",
+      "page": "page-1",
+      "x": 0,
+      "y": -190,
+      "w": 900,
+      "text": "The system every screen is built from.\nOne rule drives all of it: a missed day must never look like failure — there is no red anywhere for an\nabsence, and the headline number is always 30-day consistency, never the streak."
+    },
+    {
+      "id": "note-start",
+      "page": "page-2",
+      "x": 0,
+      "y": -170,
+      "w": 880,
+      "text": "Onboarding does one unusual thing: it argues you DOWN to two habits, and it treats finding a group\nas a required step rather than an upsell. Both are lifted straight from the retention research."
+    },
+    {
+      "id": "note-day",
+      "page": "page-3",
+      "x": 0,
+      "y": -170,
+      "w": 880,
+      "text": "The daily loop, and what happens at its edges.\nThe three sheets are the log flows — amount, timer, and the skip flow that protects the streak.\nSkip is a first-class state, not a null."
+    },
+    {
+      "id": "note-habit",
+      "page": "page-4",
+      "x": 0,
+      "y": -150,
+      "w": 880,
+      "text": "Detail, creation and editing — including a breaking habit, which reads and scores differently\nfrom a building one."
+    },
+    {
+      "id": "note-group",
+      "page": "page-5",
+      "x": 0,
+      "y": -150,
+      "w": 880,
+      "text": "The accountability layer. Note what is absent: no leaderboard by default, no downvote,\nand nudges rate-limited to once a week per person."
+    },
+    {
+      "id": "note-you",
+      "page": "page-6",
+      "x": 0,
+      "y": -170,
+      "w": 880,
+      "text": "Account, the notification budget, and the lapse screen — the one no competitor has.\nSystem states last: a habit tracker that loses an entry is worse than no habit tracker,\nso every failure state says where the data actually is."
+    },
+    {
+      "id": "note-desk",
+      "page": "page-7",
+      "x": 0,
+      "y": -150,
+      "w": 900,
+      "text": "Same data at desktop width. The per-habit week strip and the full-year heatmap are the two things\na phone genuinely cannot show."
+    },
+    {
+      "id": "note-dir",
+      "page": "page-8",
+      "x": 0,
+      "y": -150,
+      "w": 880,
+      "text": "Two directions I did not take, kept so you can push back. Each names its own trade-off."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-3"
+  }
+}

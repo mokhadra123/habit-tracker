@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+  <style>
+    *{ box-sizing: border-box; }
+    body{ margin:0; background: oklch(0.982 0.008 80); color: oklch(0.24 0.018 55);
+          font-family: Archivo, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    a{ color: oklch(0.58 0.12 45); } a:hover{ color: oklch(0.47 0.12 45); }
+    .serif{ font-family: "Instrument Serif", Georgia, serif; font-weight:400; }
+    .cap{ font-size:10px; letter-spacing:0.12em; text-transform:uppercase; font-weight:600; color: oklch(0.66 0.010 55); }
+  </style>
+</helmet>
+
+<div style="width:1280px; height:860px; display:flex; background: oklch(0.982 0.008 80);">
+
+  <div style="width:238px; flex-shrink:0; border-right:1px solid oklch(0.915 0.010 80); background: oklch(0.9725 0.010 80); display:flex; flex-direction:column; padding:26px 16px 20px;">
+    <div style="display:flex; align-items:center; gap:10px; padding:0 8px 26px;">
+      <div style="width:26px; height:26px; border-radius:8px; background: oklch(0.58 0.12 45); display:flex; align-items:center; justify-content:center;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="oklch(0.99 0.01 45)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <span class="serif" style="font-size:19px;">Daybreak</span>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:2px;">
+      <div style="display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.91 0.010 80); font-size:13.5px; font-weight:600;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.45 0.09 45)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="4"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>
+        Today
+      </div>
+      <div style="display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px; font-size:13.5px; color: oklch(0.48 0.014 55);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg>
+        All habits
+      </div>
+      <div style="display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px; font-size:13.5px; color: oklch(0.48 0.014 55);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m4 16 6-6 4 4 6-7"/><path d="M20 7v4.5h-4.5"/></svg>
+        Insights
+      </div>
+    </div>
+
+    <div class="cap" style="padding:26px 12px 10px;">Group</div>
+    <div style="display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:10px; background: oklch(0.955 0.024 45);">
+      <div style="display:flex; align-items:center;">
+        <div style="width:22px; height:22px; border-radius:999px; background: oklch(0.90 0.045 250); border:2px solid oklch(0.955 0.024 45); display:flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:600; color: oklch(0.45 0.09 250);">Y</div>
+        <div style="width:22px; height:22px; border-radius:999px; background: oklch(0.91 0.045 320); border:2px solid oklch(0.955 0.024 45); display:flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:600; color: oklch(0.46 0.09 320); margin-left:-8px;">A</div>
+        <div style="width:22px; height:22px; border-radius:999px; background: oklch(0.92 0.040 120); border:2px solid oklch(0.955 0.024 45); display:flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:600; color: oklch(0.44 0.09 120); margin-left:-8px;">H</div>
+      </div>
+      <div style="flex-grow:1; font-size:13px; font-weight:600; color: oklch(0.38 0.07 45);">Sunrise Club</div>
+      <div style="width:7px; height:7px; border-radius:999px; background: oklch(0.58 0.12 45);"></div>
+    </div>
+
+    <div style="margin-top:auto; display:flex; align-items:center; gap:11px; padding:10px 12px; border-top:1px solid oklch(0.92 0.010 80); padding-top:16px;">
+      <div style="width:30px; height:30px; border-radius:999px; background: oklch(0.945 0.030 45); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color: oklch(0.47 0.12 45);">MK</div>
+      <div style="flex-grow:1; min-width:0;">
+        <div style="font-size:12.5px; font-weight:500;">Mohamed</div>
+        <div style="font-size:10.5px; color: oklch(0.68 0.010 55);">Cairo &middot; day starts 04:00</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow:1; display:flex; min-width:0;">
+
+    <div style="flex-grow:1; padding:34px 32px; min-width:0; display:flex; flex-direction:column;">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between;">
+        <div>
+          <div class="cap">Sunday</div>
+          <div class="serif" style="font-size:38px; line-height:1.02; margin-top:6px;">23 August</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:22px;">
+          <div style="text-align:right;">
+            <div class="serif" style="font-size:34px; line-height:1;">86<span style="font-size:17px;">%</span></div>
+            <div style="font-size:11px; color: oklch(0.60 0.014 55); margin-top:4px;">30-day consistency</div>
+          </div>
+          <button style="height:40px; padding:0 17px; border-radius:11px; border:none; background: oklch(0.58 0.12 45); color: oklch(0.99 0.008 45); font-family:inherit; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            New habit
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:14px; padding:26px 16px 10px;">
+        <div style="width:44px;"></div>
+        <div style="flex-grow:1;" class="cap">Habit</div>
+        <div style="width:196px;" class="cap">This week</div>
+        <div style="width:66px; text-align:right;" class="cap">30 d</div>
+        <div style="width:76px;"></div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:9px;">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+          <div style="display:flex; align-items:center; gap:14px; padding:13px 16px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.905 0.010 80); border-radius:14px;">
+            <div style="width:40px; height:40px; border-radius:999px; background: {{r.markBg}}; border: {{r.markBorder}}; display:flex; align-items:center; justify-content:center; flex-shrink:0; color: {{r.markInk}}; font-size:12px; font-weight:600;"><sc-if value="{{r.done}}" hint-placeholder-val="{{true}}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></sc-if>{{r.mark}}</div>
+            <div style="flex-grow:1; min-width:0;">
+              <div style="font-size:14px; font-weight:500;">{{r.name}}</div>
+              <div style="font-size:11.5px; color: oklch(0.68 0.010 55); margin-top:3px;">{{r.sub}}</div>
+            </div>
+            <div style="width:196px; display:flex; gap:6px;">
+              <sc-for list="{{r.days}}" as="d" hint-placeholder-count="7">
+                <div style="width:22px; height:22px; border-radius:6px; background: {{d.bg}}; border: {{d.border}};"></div>
+              </sc-for>
+            </div>
+            <div style="width:66px; text-align:right; font-size:14px; font-weight:600; color: {{r.pctInk}};">{{r.pct}}</div>
+            <div style="width:76px; display:flex; justify-content:flex-end; align-items:center;">
+              <sc-for list="{{r.faces}}" as="f" hint-placeholder-count="3">
+                <div style="width:23px; height:23px; border-radius:999px; background: {{f.tint}}; border:2px solid oklch(0.999 0.003 80); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; color: {{f.ink}}; margin-left:-7px;">{{f.initial}}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="margin-top:auto; display:flex; align-items:center; gap:9px; padding-top:22px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.72 0.012 55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M12 16.5v-5"/><circle cx="12" cy="8" r="0.7" fill="oklch(0.72 0.012 55)"/></svg>
+        <span style="font-size:11.5px; color: oklch(0.64 0.012 55);">Dashed squares are days you deliberately skipped. They never count against you.</span>
+      </div>
+    </div>
+
+    <div style="width:326px; flex-shrink:0; border-left:1px solid oklch(0.915 0.010 80); background: oklch(0.9755 0.008 80); padding:34px 24px; display:flex; flex-direction:column;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between;">
+        <div class="cap">Sunrise Club today</div>
+        <span style="font-size:11px; color: oklch(0.68 0.010 55);">4 of 5</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
+        <div style="display:flex; align-items:flex-start; gap:11px; padding:13px 14px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.91 0.010 80); border-radius:13px;">
+          <div style="width:30px; height:30px; border-radius:999px; background: oklch(0.90 0.045 250); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color: oklch(0.45 0.09 250); flex-shrink:0;">Y</div>
+          <div style="flex-grow:1; min-width:0;">
+            <div style="font-size:12.5px; line-height:1.4;"><span style="font-weight:600;">Yasmin</span> ran 6.1 km</div>
+            <div style="font-size:10.5px; color: oklch(0.70 0.010 55); margin-top:3px;">06:12</div>
+          </div>
+          <div style="height:26px; padding:0 9px; border-radius:999px; background: oklch(0.955 0.024 45); display:flex; align-items:center; gap:5px; color: oklch(0.46 0.10 45); font-size:11px; font-weight:600; flex-shrink:0;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2l1.9 5.4 5.4 1.9-5.4 1.9L12 17.8l-1.9-5.4L4.7 10.5l5.4-1.9z"/></svg>3
+          </div>
+        </div>
+
+        <div style="padding:13px 14px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.91 0.010 80); border-radius:13px;">
+          <div style="display:flex; align-items:flex-start; gap:11px;">
+            <div style="width:30px; height:30px; border-radius:999px; background: oklch(0.91 0.045 320); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color: oklch(0.46 0.09 320); flex-shrink:0;">A</div>
+            <div style="flex-grow:1; min-width:0;">
+              <div style="font-size:12.5px; line-height:1.4;"><span style="font-weight:600;">Adam</span> read 30 pages</div>
+              <div style="font-size:10.5px; color: oklch(0.70 0.010 55); margin-top:3px;">08:40</div>
+            </div>
+          </div>
+          <div style="font-size:11.5px; color: oklch(0.46 0.014 55); font-style:italic; line-height:1.5; margin-top:9px; padding-left:41px;">&ldquo;Finished the Kahneman finally.&rdquo;</div>
+        </div>
+
+        <div style="display:flex; align-items:flex-start; gap:11px; padding:13px 14px; background: oklch(0.999 0.003 80); border:1px solid oklch(0.91 0.010 80); border-radius:13px;">
+          <div style="width:30px; height:30px; border-radius:999px; background: oklch(0.92 0.040 120); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color: oklch(0.44 0.09 120); flex-shrink:0;">H</div>
+          <div style="flex-grow:1; min-width:0;">
+            <div style="font-size:12.5px; line-height:1.4;"><span style="font-weight:600;">Hussein</span> meditated 12 min</div>
+            <div style="font-size:10.5px; color: oklch(0.70 0.010 55); margin-top:3px;">21:05</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; padding:14px; border-radius:13px; border:1px solid oklch(0.91 0.010 80); background: oklch(0.9725 0.010 80); display:flex; align-items:center; gap:11px;">
+        <div style="width:30px; height:30px; border-radius:999px; background: oklch(0.93 0.020 80); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color: oklch(0.58 0.014 55); flex-shrink:0;">S</div>
+        <div style="flex-grow:1; min-width:0;">
+          <div style="font-size:12.5px; color: oklch(0.44 0.014 55);"><span style="font-weight:600;">Sara</span>, quiet 6 days</div>
+        </div>
+        <button style="height:32px; padding:0 12px; border-radius:999px; border:1px solid oklch(0.74 0.09 45); background:transparent; font-family:inherit; font-size:11.5px; font-weight:600; color: oklch(0.50 0.11 45); cursor:pointer;">Nudge</button>
+      </div>
+
+      <div style="margin-top:auto; padding-top:22px;">
+        <div class="cap" style="padding-bottom:11px;">Week so far</div>
+        <div style="display:flex; flex-direction:column; gap:9px;">
+          <sc-for list="{{week}}" as="m" hint-placeholder-count="5">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="flex-grow:1; font-size:12px; color: oklch(0.46 0.014 55);">{{m.name}}</div>
+              <div style="width:130px; height:7px; border-radius:999px; background: oklch(0.93 0.008 80); overflow:hidden;">
+                <div style="width: {{m.w}}; height:7px; border-radius:999px; background: {{m.bg}};"></div>
+              </div>
+              <div style="width:16px; text-align:right; font-size:11px; color: oklch(0.66 0.012 55);">{{m.count}}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    var on = 'oklch(0.58 0.10 155)';
+    var mid = 'oklch(0.79 0.075 155)';
+    var off = 'oklch(0.945 0.006 80)';
+    var flat = '1px solid transparent';
+    var skipB = '1.5px dashed oklch(0.82 0.012 80)';
+    function strip(p) {
+      return p.split('').map(function (c) {
+        if (c === 'x') return { bg: on, border: flat };
+        if (c === 'o') return { bg: mid, border: flat };
+        if (c === 's') return { bg: 'transparent', border: skipB };
+        if (c === 't') return { bg: 'transparent', border: '2px solid oklch(0.58 0.12 45)' };
+        return { bg: off, border: flat };
+      });
+    }
+    var faces = {
+      Y: { initial: 'Y', tint: 'oklch(0.90 0.045 250)', ink: 'oklch(0.45 0.09 250)' },
+      A: { initial: 'A', tint: 'oklch(0.91 0.045 320)', ink: 'oklch(0.46 0.09 320)' },
+      H: { initial: 'H', tint: 'oklch(0.92 0.040 120)', ink: 'oklch(0.44 0.09 120)' }
+    };
+    var rows = [
+      { name: 'Morning run', sub: '4× a week · 3 done', done: true, done: false, mark: '', markBg: 'oklch(0.58 0.10 155)', markBorder: '2px solid oklch(0.58 0.10 155)', markInk: 'oklch(0.99 0.01 155)', days: strip('xx.xxot'), pct: '92%', pctInk: 'oklch(0.36 0.018 55)', faces: [faces.Y, faces.A, faces.H] },
+      { name: 'Read', sub: '12 of 20 pages', done: false, mark: '12', markBg: 'transparent', markBorder: '2px solid oklch(0.79 0.075 155)', markInk: 'oklch(0.40 0.016 55)', days: strip('xoxx.ot'), pct: '81%', pctInk: 'oklch(0.36 0.018 55)', faces: [faces.A] },
+      { name: 'Meditate', sub: '10 minutes · every day', done: false, mark: '', markBg: 'transparent', markBorder: '2px dashed oklch(0.85 0.012 80)', markInk: 'oklch(0.70 0.012 55)', days: strip('x.xs.xt'), pct: '64%', pctInk: 'oklch(0.52 0.07 45)', faces: [faces.H] },
+      { name: 'No phone after 22:00', sub: 'Breaking · 6 clean nights', done: false, mark: '', markBg: 'oklch(0.955 0.020 280)', markBorder: '2px solid oklch(0.955 0.020 280)', markInk: 'oklch(0.52 0.09 280)', days: strip('xxxxxxt'), pct: '88%', pctInk: 'oklch(0.36 0.018 55)', faces: [] },
+      { name: 'Swim', sub: '3× a week · new', done: false, mark: '', markBg: 'transparent', markBorder: '2px dashed oklch(0.85 0.012 80)', markInk: 'oklch(0.70 0.012 55)', days: strip('....o.t'), pct: '—', pctInk: 'oklch(0.70 0.012 55)', faces: [faces.Y] }
+    ];
+    var week = [
+      { name: 'Mohamed', count: 6, w: '86%', bg: 'oklch(0.58 0.10 155)' },
+      { name: 'Yasmin', count: 7, w: '100%', bg: 'oklch(0.58 0.10 155)' },
+      { name: 'Adam', count: 5, w: '71%', bg: 'oklch(0.68 0.095 155)' },
+      { name: 'Sara', count: 2, w: '29%', bg: 'oklch(0.82 0.055 155)' },
+      { name: 'Hussein', count: 4, w: '57%', bg: 'oklch(0.72 0.085 155)' }
+    ];
+    return { rows: rows, week: week };
+  }
+}
+</script>
+</body>
+</html>

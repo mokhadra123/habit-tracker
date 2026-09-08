@@ -1,0 +1,29 @@
+{
+  "name": "habit-tracker",
+  "version": "0.0.0",
+  "private": true,
+  "author": "Mohamed Khadra",
+  "description": "Full-stack habit tracker for building and sustaining daily routines. Next.js web client and NestJS API in a pnpm monorepo.",
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=22"
+  },
+
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,css}\"",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist apps/*/.next .turbo"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "turbo": "^2.5.0",
+    "typescript": "^5.7.3"
+  }
+}

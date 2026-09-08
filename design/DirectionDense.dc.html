@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Architects+Daughter&display=swap">
+  <style>
+    *{ box-sizing: border-box; }
+    body{ margin:0; background: oklch(0.97 0 0); color: oklch(0.30 0 0);
+          font-family: Archivo, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    a{ color: oklch(0.55 0.11 250); } a:hover{ color: oklch(0.45 0.11 250); }
+    .hand{ font-family: "Architects Daughter", "Comic Sans MS", cursive; }
+  </style>
+</helmet>
+
+<div style="width:390px; min-height:700px; display:flex; flex-direction:column; background: oklch(0.97 0 0); padding:22px 18px;">
+
+  <div style="display:flex; align-items:baseline; justify-content:space-between; padding-bottom:4px;">
+    <div class="hand" style="font-size:19px; color: oklch(0.40 0 0);">Direction B &mdash; the ledger</div>
+  </div>
+  <div class="hand" style="font-size:13px; color: oklch(0.58 0 0); line-height:1.5; padding-bottom:18px;">Everything on one grid. No cards, no feed. For people who want the numbers.</div>
+
+  <div style="border:1.5px solid oklch(0.72 0 0); border-radius:4px; background: oklch(0.995 0 0); padding:13px;">
+    <div style="display:flex; gap:6px; align-items:center; padding-bottom:10px;">
+      <div style="flex-grow:1; height:9px; background: oklch(0.80 0 0); border-radius:2px; max-width:90px;"></div>
+      <div style="display:flex; gap:4px;">
+        <sc-for list="{{hdr}}" as="h" hint-placeholder-count="14">
+          <div style="width:15px; text-align:center; font-size:8px; color: oklch(0.62 0 0);">{{h}}</div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <div style="flex-grow:1; max-width:90px; height:9px; background: oklch(0.86 0 0); border-radius:2px;"></div>
+          <div style="display:flex; gap:4px;">
+            <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="14">
+              <div style="width:15px; height:15px; border-radius:2px; background: {{c.bg}}; border:1px solid oklch(0.85 0 0);"></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:9px; margin-top:14px;">
+    <div style="flex-grow:1; border:1.5px solid oklch(0.72 0 0); border-radius:4px; background: oklch(0.995 0 0); padding:12px;">
+      <div style="font-size:26px; font-weight:600; color: oklch(0.35 0 0);">86%</div>
+      <div style="height:7px; width:66px; background: oklch(0.86 0 0); border-radius:2px; margin-top:7px;"></div>
+    </div>
+    <div style="flex-grow:1; border:1.5px solid oklch(0.72 0 0); border-radius:4px; background: oklch(0.995 0 0); padding:12px;">
+      <div style="display:flex; align-items:flex-end; gap:3px; height:32px;">
+        <sc-for list="{{spark}}" as="s" hint-placeholder-count="12">
+          <div style="width:6px; height: {{s}}; background: oklch(0.55 0.11 250); border-radius:1px;"></div>
+        </sc-for>
+      </div>
+      <div style="height:7px; width:52px; background: oklch(0.86 0 0); border-radius:2px; margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px; border:1.5px dashed oklch(0.75 0 0); border-radius:4px; padding:12px;">
+    <div class="hand" style="font-size:12.5px; color: oklch(0.52 0 0); line-height:1.5;">Group lives in one collapsed strip at the bottom, not a feed.</div>
+    <div style="display:flex; gap:6px; margin-top:10px;">
+      <sc-for list="{{people}}" as="p" hint-placeholder-count="5">
+        <div style="flex-grow:1;">
+          <div style="height:7px; background: oklch(0.86 0 0); border-radius:2px;"></div>
+          <div style="height:5px; width: {{p}}; background: oklch(0.55 0.11 250); border-radius:2px; margin-top:5px;"></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="hand" style="margin-top:auto; padding-top:22px; font-size:12px; color: oklch(0.60 0 0); line-height:1.6;">
+    <strong>Trade-off:</strong> best for the committed, worst for the casual friend. Density is exactly what makes people bounce in week one.
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() {
+    var seed = 991;
+    function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+    var hdr = ['M','T','W','T','F','S','S','M','T','W','T','F','S','S'];
+    var tones = ['oklch(0.955 0 0)', 'oklch(0.80 0.05 250)', 'oklch(0.66 0.09 250)', 'oklch(0.55 0.11 250)'];
+    var rows = [];
+    for (var i = 0; i < 7; i++) {
+      var cells = [];
+      for (var j = 0; j < 14; j++) {
+        cells.push({ bg: tones[Math.floor(rnd() * 4)] });
+      }
+      rows.push({ cells: cells });
+    }
+    var spark = [12, 19, 15, 24, 28, 21, 30, 26, 18, 29, 32, 25].map(function (n) { return n + 'px'; });
+    var people = ['80%', '95%', '60%', '30%', '55%'];
+    return { hdr: hdr, rows: rows, spark: spark, people: people };
+  }
+}
+</script>
+</body>
+</html>
