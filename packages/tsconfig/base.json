@@ -2,12 +2,6 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Habit Tracker — base",
 
-  // Only options that are TRUE FOR EVERY TARGET live here.
-  // Deliberately absent:
-  //   target / lib / module / moduleResolution — web and api disagree, by design
-  //   include / exclude / paths / baseUrl / outDir — relative paths resolve
-  //     against the file that DECLARES them, which for this file is inside
-  //     node_modules. They must stay in each app's own tsconfig.
   "compilerOptions": {
     "strict": true,
     "noImplicitOverride": true,
@@ -18,7 +12,6 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
 
-    "skipLibCheck": true,
-    "incremental": true
+    "skipLibCheck": true
   }
 }

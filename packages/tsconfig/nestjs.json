@@ -11,13 +11,13 @@
     "moduleResolution": "nodenext",
     "resolvePackageJsonExports": true,
 
-    // Nest's DI reads parameter types at runtime from this metadata.
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
 
     "declaration": true,
     "sourceMap": true,
     "removeComments": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "incremental": true
   }
 }
