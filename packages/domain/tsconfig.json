@@ -1,0 +1,5 @@
+{
+  "extends": "@habit/tsconfig/library.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
