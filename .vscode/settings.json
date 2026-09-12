@@ -1,0 +1,63 @@
+{
+  // ---- Format on save: Prettier formats, ESLint fixes ----
+  // These are two different jobs. Prettier owns whitespace and quotes;
+  // ESLint owns code correctness. eslint-config-prettier keeps them from
+  // arguing, which is why eslint-plugin-prettier is deliberately not used.
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ---- Prettier ----
+  // Never format a file that no .prettierrc covers.
+  "prettier.requireConfig": true,
+  "prettier.configPath": ".prettierrc",
+  "prettier.ignorePath": ".prettierignore",
+
+  // ---- ESLint (monorepo) ----
+  // "auto" is the setting that makes this work across packages: the extension
+  // resolves the nearest package.json per file, so apps/api lints with the
+  // Nest config and apps/web with the Next one, in a single window.
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+  // ---- TypeScript ----
+  // Use the workspace TypeScript, not the one bundled with VS Code, so the
+  // editor and `pnpm typecheck` report identical errors.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+
+  // ---- Per-language formatters ----
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[prisma]": { "editor.defaultFormatter": "Prisma.prisma" },
+
+  // ---- Editor hygiene ----
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // ---- Keep search and file watching out of build output ----
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/coverage": true,
+    "**/pnpm-lock.yaml": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/.turbo/**": true
+  }
+}

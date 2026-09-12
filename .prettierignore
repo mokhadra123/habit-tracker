@@ -1,0 +1,18 @@
+# Prettier does not read .gitignore — this list must be maintained separately.
+node_modules/
+dist/
+build/
+out/
+coverage/
+.next/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+pnpm-lock.yaml
+
+# Generated design mockups
+design/
+
+# Hand-authored specs: table alignment is deliberate, and reflowing the
+# Arabic (RTL) file mangles it.
+docs/

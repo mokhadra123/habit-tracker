@@ -1,0 +1,31 @@
+{
+  "name": "@habit/domain",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@habit/eslint-config": "workspace:*",
+    "@habit/tsconfig": "workspace:*",
+    "tsup": "^8",
+    "eslint": "^9",
+    "typescript": "^5.9.3",
+    "vitest": "^3"
+  }
+}
