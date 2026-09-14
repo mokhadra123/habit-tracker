@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model HabitCategory {
+  id                String @id @default(uuid(7)) @db.Uuid
+  habitCategoryName String @unique @map("habit_category_name")
+
+  @@map("habit_categories")
+}
