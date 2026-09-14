@@ -1,6 +1,7 @@
 import nest from '@habit/eslint-config/nest';
 
 export default [
+  { ignores: ['prisma.config.ts'] },
   ...nest,
   {
     languageOptions: {

@@ -28,7 +28,6 @@
   // editor and `pnpm typecheck` report identical errors.
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.preferences.preferTypeOnlyAutoImports": true,
 
   // ---- Per-language formatters ----
   "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
