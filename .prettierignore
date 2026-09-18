@@ -16,3 +16,5 @@ design/
 # Hand-authored specs: table alignment is deliberate, and reflowing the
 # Arabic (RTL) file mangles it.
 docs/
+
+apps/api/src/generated/

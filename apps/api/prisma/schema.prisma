@@ -1,0 +1,309 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ====================================
+// ------------- ENUMS  ---------------
+// ====================================
+
+// System-level role. NOT the same as group_member_role.
+enum user_role {
+  user
+  admin
+}
+
+// Role inside one group. NOT the same as users.role.
+enum group_member_role {
+  owner
+  member
+}
+
+enum habit_repeat {
+  daily
+  weekly
+  n_per_week
+  every_n_days
+}
+
+// State of the HABIT ITSELF (the rule), not of any single day.
+enum habit_lifecycle {
+  active
+  paused
+  archived
+}
+
+// `duration` is kept for v1.1; the API rejects it until then.
+enum habit_type {
+  boolean
+  numeric
+  duration
+}
+
+enum habit_direction {
+  building
+  breaking
+}
+
+enum habit_visibility {
+  private
+  group
+}
+
+// Outcome of ONE DAY. No `missed`: an absent row on an expected day is the miss.
+enum habit_log_status {
+  done
+  partial
+  skipped
+}
+
+enum reaction_kind {
+  fire
+  muscle
+  clap
+  heart
+  star
+}
+
+enum oauth_provider {
+  google
+  github
+}
+
+// ====================================
+// -------------- TABLES  -------------
+// ====================================
+
+model HabitCategory {
+  id                String @id @default(uuid(7)) @db.Uuid
+  habitCategoryName String @unique @map("habit_category_name")
+
+  habits Habit[]
+
+  @@map("habit_categories")
+}
+
+model User {
+  id       String    @id @default(uuid(7)) @db.Uuid
+  username String    @unique
+  email    String    @unique
+  // BCrypt hash, never plaintext. NULL for OAuth-only users (FR-6.1).
+  password String?
+  role     user_role @default(user)
+
+  // --- time & week resolution ---
+  // IANA name, e.g. Africa/Cairo. Never a fixed offset.
+  timezone        String
+  // 0=Sun .. 6=Sat. When n_per_week and allowed-misses windows reset.
+  weekStart       Int    @default(1) @map("week_start") @db.SmallInt
+  // 0..23 local time. 4 = a log at 02:00 counts for the previous day.
+  dayBoundaryHour Int    @default(0) @map("day_boundary_hour") @db.SmallInt
+
+  // --- notification policy ---
+  // daily_reminder_budget, quiet_hours_start, quiet_hours_end arrive with
+  // reminders in v1.1 (additive migration).
+
+  // --- auth lifecycle ---
+  isAccountVerified           Boolean   @default(false) @map("is_account_verified")
+  verificationTokenHash       String?   @unique @map("verification_token_hash")
+  verificationTokenExpiresAt  DateTime? @map("verification_token_expires_at") @db.Timestamptz
+  resetPasswordTokenHash      String?   @unique @map("reset_password_token_hash")
+  resetPasswordTokenExpiresAt DateTime? @map("reset_password_token_expires_at") @db.Timestamptz
+  passwordChangedAt           DateTime? @map("password_changed_at") @db.Timestamptz
+
+  profileImage String? @map("profile_image")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  // Deactivation only. FR-6.3 account deletion is a hard cascading delete.
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  ownedGroups      Group[]
+  groupMemberships GroupMember[]
+  habits           Habit[]
+  habitLogs        HabitLog[]
+  reactions        Reaction[]
+  refreshTokens    RefreshToken[]
+  oauthAccounts    OauthAccount[]
+
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model Group {
+  id                 String  @id @default(uuid(7)) @db.Uuid
+  groupName          String  @map("group_name")
+  icon               String?
+  // Restrict: an owner can't delete their account while owning a group.
+  ownerId            String  @map("owner_id") @db.Uuid
+  owner              User    @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  // Opaque random token for the invite link. Never derived from id.
+  inviteCode         String  @unique @map("invite_code")
+  maxMembers         Int     @default(12) @map("max_members") @db.SmallInt
+  leaderboardEnabled Boolean @default(false) @map("leaderboard_enabled")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  members GroupMember[]
+  habits  Habit[]
+
+  @@index([ownerId])
+  @@map("groups")
+}
+
+// Exactly one row per group must have role=owner and match groups.owner_id
+// (application rule).
+model GroupMember {
+  id       String            @id @default(uuid(7)) @db.Uuid
+  groupId  String            @map("group_id") @db.Uuid
+  group    Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String            @map("user_id") @db.Uuid
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     group_member_role @default(member)
+  joinedAt DateTime          @default(now()) @map("joined_at") @db.Timestamptz
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@map("group_members")
+}
+
+model Habit {
+  id          String  @id @default(uuid(7)) @db.Uuid
+  habitName   String  @map("habit_name")
+  icon        String?
+  // Hex, e.g. #E8743B.
+  color       String?
+  description String?
+
+  lifecycle  habit_lifecycle  @default(active)
+  direction  habit_direction  @default(building)
+  visibility habit_visibility @default(private)
+
+  // --- schedule (FR-1.3 / FR-1.4) — column combinations get CHECKs in Lesson 6 ---
+  repeatHabit  habit_repeat @default(daily) @map("repeat_habit")
+  // weekly only. 0=Sun .. 6=Sat.
+  weekdays     Int[]        @db.SmallInt
+  // n_per_week only. 1..7.
+  timesPerWeek Int?         @map("times_per_week") @db.SmallInt
+  // every_n_days only. >= 2, counted from start_date.
+  intervalDays Int?         @map("interval_days") @db.SmallInt
+  // No DB default on purpose: CURRENT_DATE uses the server's time zone.
+  // The service sets it with resolveLogDate.
+  startDate    DateTime     @map("start_date") @db.Date
+
+  // --- measurement (FR-1.2 / FR-1.6) ---
+  habitType   habit_type @default(boolean) @map("habit_type")
+  // NULL for boolean; 8 for 8 glasses.
+  targetValue Decimal?   @map("target_value")
+  targetUnit  String?    @map("target_unit")
+
+  // --- forgiving streak (FR-2.4) ---
+  allowedMissesPerWeek Int @default(1) @map("allowed_misses_per_week") @db.SmallInt
+
+  // --- ownership & sharing ---
+  // is_shared_definition and created_from_template_id arrive in v1.1.
+  userId     String         @map("user_id") @db.Uuid
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Which group. Whether that group may SEE it is `visibility`, not this being NULL.
+  groupId    String?        @map("group_id") @db.Uuid
+  group      Group?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  categoryId String?        @map("category_id") @db.Uuid
+  category   HabitCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  logs HabitLog[]
+
+  @@index([userId])
+  @@index([groupId])
+  @@index([categoryId])
+  // Group feed: find habits this group is allowed to see.
+  @@index([groupId, visibility])
+  @@map("habits")
+}
+
+model HabitLog {
+  id      String @id @default(uuid(7)) @db.Uuid
+  habitId String @map("habit_id") @db.Uuid
+  habit   Habit  @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  // WHO logged it.
+  userId  String @map("user_id") @db.Uuid
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // LOCAL calendar date from resolveLogDate, never UTC.
+  logDate DateTime         @map("log_date") @db.Date
+  // No default: every write states the outcome. A silent `done` fabricates
+  // a completion (NFR-6).
+  status  habit_log_status
+  // NULL for boolean habits and for skipped.
+  value   Decimal?
+
+  // note and photo_url arrive in v1.1 / v2.
+
+  // The real instant of logging, kept apart from log_date for auditing.
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  reactions Reaction[]
+
+  // One log per habit, per person, per day — enforced by the database.
+  @@unique([habitId, userId, logDate])
+  // Heatmap + re-entry view (FR-5.1, FR-2.7).
+  @@index([userId, logDate])
+  // Group feed scans by date (FR-3.3).
+  @@index([logDate])
+  @@map("habit_logs")
+}
+
+// One reaction per person per entry; a different kind REPLACES it.
+// Only legal if the reactor can see the entry — an application rule.
+model Reaction {
+  id         String        @id @default(uuid(7)) @db.Uuid
+  habitLogId String        @map("habit_log_id") @db.Uuid
+  habitLog   HabitLog      @relation(fields: [habitLogId], references: [id], onDelete: Cascade)
+  userId     String        @map("user_id") @db.Uuid
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       reaction_kind
+  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamptz
+
+  @@unique([habitLogId, userId])
+  @@index([habitLogId])
+  @@map("reactions")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  familyId  String    @map("family_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+model OauthAccount {
+  id                String         @id @default(uuid(7)) @db.Uuid
+  userId            String         @map("user_id") @db.Uuid
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          oauth_provider @map("provider")
+  providerAccountId String         @map("provider_account_id")
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  @@unique([provider, providerAccountId])
+  @@unique([userId, provider])
+  @@map("oauth_accounts")
+}
