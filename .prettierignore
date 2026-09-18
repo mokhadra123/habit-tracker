@@ -18,3 +18,4 @@ design/
 docs/
 
 apps/api/src/generated/
+apps/api/.agents/
