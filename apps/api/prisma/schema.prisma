@@ -70,6 +70,11 @@ enum reaction_kind {
   star
 }
 
+enum oauth_provider {
+  google
+  github
+}
+
 // ====================================
 // -------------- TABLES  -------------
 // ====================================
@@ -105,9 +110,9 @@ model User {
 
   // --- auth lifecycle ---
   isAccountVerified           Boolean   @default(false) @map("is_account_verified")
-  verificationToken           String?   @map("verification_token")
+  verificationTokenHash       String?   @unique @map("verification_token_hash")
   verificationTokenExpiresAt  DateTime? @map("verification_token_expires_at") @db.Timestamptz
-  resetPasswordToken          String?   @map("reset_password_token")
+  resetPasswordTokenHash      String?   @unique @map("reset_password_token_hash")
   resetPasswordTokenExpiresAt DateTime? @map("reset_password_token_expires_at") @db.Timestamptz
   passwordChangedAt           DateTime? @map("password_changed_at") @db.Timestamptz
 
@@ -123,6 +128,8 @@ model User {
   habits           Habit[]
   habitLogs        HabitLog[]
   reactions        Reaction[]
+  refreshTokens    RefreshToken[]
+  oauthAccounts    OauthAccount[]
 
   @@index([deletedAt])
   @@map("users")
@@ -271,4 +278,32 @@ model Reaction {
   @@unique([habitLogId, userId])
   @@index([habitLogId])
   @@map("reactions")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  familyId  String    @map("family_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+model OauthAccount {
+  id                String         @id @default(uuid(7)) @db.Uuid
+  userId            String         @map("user_id") @db.Uuid
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          oauth_provider @map("provider")
+  providerAccountId String         @map("provider_account_id")
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  @@unique([provider, providerAccountId])
+  @@unique([userId, provider])
+  @@map("oauth_accounts")
 }
