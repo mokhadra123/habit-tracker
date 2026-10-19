@@ -20,6 +20,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@habit/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@nestjs/common':
         specifier: ^11.0.1
         version: 11.2.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -111,6 +114,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@habit/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       next:
         specifier: 16.3.1
         version: 16.3.1(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
