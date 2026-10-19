@@ -11,9 +11,10 @@ export type {
   Streak,
   HabitType,
   HabitForLog,
-  LogInput,
   LogRejection,
   LogValidation,
+  ConsistencySettings,
 } from './types/domain.types';
 export { computeStreak } from './utils/streak';
 export { validateLog } from './utils/validateLog';
+export { consistencyScore } from './utils/consistency';

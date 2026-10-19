@@ -1,18 +1,15 @@
 import {
   type CalendarDate,
   type DayLog,
+  type DayRule,
   type LogStatus,
   type ScheduleRule,
   type Streak,
   type StreakSettings,
+  type WeekRule,
 } from '../types/domain.types';
 import { addDays, toCalendarDate, toUtcDate } from './calendarDate';
 import { isExpectedOn, weekRangeFor } from './schedule';
-
-/** The rules whose streak is counted in days. */
-type DayRule = Exclude<ScheduleRule, { repeat: 'n_per_week' }>;
-/** The rule whose streak is counted in weeks. */
-type WeekRule = Extract<ScheduleRule, { repeat: 'n_per_week' }>;
 
 /**
  * How many expected days (or weeks, for n_per_week) in a row the habit was

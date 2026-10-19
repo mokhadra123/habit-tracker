@@ -1,7 +1,7 @@
 import {
   type CalendarDate,
+  type DayLog,
   type HabitForLog,
-  type LogInput,
   type LogValidation,
 } from '../types/domain.types';
 import { addDays, toCalendarDate, toUtcDate } from './calendarDate';
@@ -34,7 +34,7 @@ const EDIT_WINDOW_DAYS = 7;
  * );
  * → { ok: false, reason: 'done_below_target' }   (5 of 8 is partial)
  */
-export function validateLog(habit: HabitForLog, log: LogInput, today: CalendarDate): LogValidation {
+export function validateLog(habit: HabitForLog, log: DayLog, today: CalendarDate): LogValidation {
   // Validated first, so the string comparisons below can trust the format.
   toUtcDate(log.date, 'log.date');
   toUtcDate(habit.startDate, 'habit.startDate');

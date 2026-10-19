@@ -19,11 +19,22 @@ export type ScheduleRule = {
  */
 export type Expectation = { unit: 'day'; expected: boolean } | { unit: 'week'; target: number };
 
+/** The rules judged day by day. */
+export type DayRule = Exclude<ScheduleRule, { repeat: 'n_per_week' }>;
+/** The rule judged week by week (FR-1.4: it has no expected days). */
+export type WeekRule = Extract<ScheduleRule, { repeat: 'n_per_week' }>;
+
 /** Both ends inclusive. */
 export type WeekRange = { start: CalendarDate; end: CalendarDate };
 
 export type LogStatus = 'done' | 'partial' | 'skipped';
-export type DayLog = { date: CalendarDate; status: LogStatus };
+
+/**
+ * One habit_logs row as the domain sees it — what validateLog checks, the
+ * streak counts and consistency weighs. `value` is NULL for boolean habits
+ * and for skipped.
+ */
+export type DayLog = { date: CalendarDate; status: LogStatus; value: number | null };
 
 export type StreakSettings = {
   weekStart: number;
@@ -43,8 +54,6 @@ export type HabitForLog = {
   startDate: CalendarDate;
 };
 
-export type LogInput = { date: CalendarDate; status: LogStatus; value: number | null };
-
 /** Why a log was refused. Codes, not messages: the API and the web choose the words. */
 export type LogRejection =
   | 'future_date'
@@ -57,3 +66,13 @@ export type LogRejection =
   | 'partial_reaches_target';
 
 export type LogValidation = { ok: true } | { ok: false; reason: LogRejection };
+
+export type ConsistencySettings = {
+  // users.week_start: n_per_week is judged in whole weeks.
+  weekStart: number;
+  // habits.target_value: weighs a partial log (5 of 8 counts 0.625). NULL for boolean.
+  targetValue: number | null;
+  // 'rolling': the last 30 days, or the last 4 complete weeks for n_per_week (FR-2.3).
+  // 'lifetime': everything since startDate, for the re-entry view (FR-2.7).
+  window: 'rolling' | 'lifetime';
+};
