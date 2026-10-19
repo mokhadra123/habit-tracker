@@ -21,3 +21,13 @@ export type Expectation = { unit: 'day'; expected: boolean } | { unit: 'week'; t
 
 /** Both ends inclusive. */
 export type WeekRange = { start: CalendarDate; end: CalendarDate };
+
+export type LogStatus = 'done' | 'partial' | 'skipped';
+export type DayLog = { date: CalendarDate; status: LogStatus };
+
+export type StreakSettings = {
+  weekStart: number;
+  allowedMissesPerWeek: number; // habits.allowed_misses_per_week
+};
+
+export type Streak = { unit: 'day' | 'week'; count: number };
