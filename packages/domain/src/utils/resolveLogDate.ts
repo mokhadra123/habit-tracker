@@ -1,5 +1,4 @@
-// A calendar date with no time and no time zone, e.g. '2026-01-15'.
-export type CalendarDate = string;
+import { type CalendarDate } from '../types/domain.types';
 
 /**
  * Building an Intl.DateTimeFormat is expensive (it reaches into ICU), and this
