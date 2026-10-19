@@ -31,3 +31,29 @@ export type StreakSettings = {
 };
 
 export type Streak = { unit: 'day' | 'week'; count: number };
+
+// `duration` arrives in v1.1 (the API rejects it until then); its log rules match numeric.
+export type HabitType = 'boolean' | 'numeric' | 'duration';
+
+/** The habit fields a log is checked against. */
+export type HabitForLog = {
+  habitType: HabitType;
+  // NULL for boolean; > 0 for numeric and duration (ck_habits_measure).
+  targetValue: number | null;
+  startDate: CalendarDate;
+};
+
+export type LogInput = { date: CalendarDate; status: LogStatus; value: number | null };
+
+/** Why a log was refused. Codes, not messages: the API and the web choose the words. */
+export type LogRejection =
+  | 'future_date'
+  | 'outside_edit_window'
+  | 'before_start'
+  | 'partial_on_boolean'
+  | 'value_not_allowed'
+  | 'value_required'
+  | 'done_below_target'
+  | 'partial_reaches_target';
+
+export type LogValidation = { ok: true } | { ok: false; reason: LogRejection };
